@@ -1,6 +1,6 @@
 # dataset
 data/
-
+!data/imagenet/move_valimg.py
 # model weights
 *.pth
 *.pt
