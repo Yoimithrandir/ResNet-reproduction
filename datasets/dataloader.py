@@ -4,8 +4,6 @@ import random
 import torch
 
 seed=45
-random.seed(seed)
-torch.manual_seed(seed)
 
 imagenet_root='./data/imagenet'
 imagenet_train_trans=transforms.Compose([
@@ -48,9 +46,45 @@ def get_dataloader(data_root:str,train_trans,val_trans,batch_size=256,num_worker
     train_dataset=datasets.ImageFolder(train_path,train_trans)
     val_dataset=datasets.ImageFolder(val_path,val_trans)
 
-    train_loader=DataLoader(train_dataset,batch_size=batch_size,shuffle=True,num_workers=num_workers)
-    val_loader=DataLoader(val_dataset,batch_size=batch_size,shuffle=False,num_workers=num_workers)
+    train_loader=DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=True
+    )
+    val_loader=DataLoader(
+        val_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=True
+    )
 
     return train_loader,val_loader
 
+#set seed
+def seed_everything(seed):
+    random.seed(seed)
+    torch.manual_seed(seed)
+
+if __name__ == "__main__":
+    seed_everything(seed)
+    train_loader, val_loader = get_dataloader(
+        imagenet_root,
+        imagenet_train_trans,
+        imagenet_val_trans,
+        batch_size=4,
+        num_workers=2
+    )
+
+    images,labels = next(iter(train_loader))
+
+    print("image shape:", images.shape)
+    print("label shape:", labels.shape)
+
+    print("image min:", images.min())
+    print("image max:", images.max())
+
+    print("classes:", len(train_loader.dataset.classes))
 
