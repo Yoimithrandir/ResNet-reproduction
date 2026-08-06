@@ -63,13 +63,8 @@ def get_dataloader(data_root:str,train_trans,val_trans,batch_size=256,num_worker
 
     return train_loader,val_loader
 
-#set seed
-def seed_everything(seed):
-    random.seed(seed)
-    torch.manual_seed(seed)
-
 if __name__ == "__main__":
-    seed_everything(seed)
+    
     train_loader, val_loader = get_dataloader(
         imagenet_root,
         imagenet_train_trans,
