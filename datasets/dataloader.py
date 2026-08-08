@@ -1,9 +1,10 @@
+#这个文件为个人对dataloader的实现，没有使用DALI
+
 from torchvision import transforms,datasets
 from torch.utils.data import DataLoader
 import random
 import torch
 
-seed=45
 
 imagenet_root='./data/imagenet'
 imagenet_train_trans=transforms.Compose([
@@ -51,7 +52,9 @@ def get_dataloader(data_root:str,train_trans,val_trans,batch_size=256,num_worker
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=True,
+        persistent_workers=True,
+        prefetch_factor=4
     )
     val_loader=DataLoader(
         val_dataset,
@@ -63,13 +66,8 @@ def get_dataloader(data_root:str,train_trans,val_trans,batch_size=256,num_worker
 
     return train_loader,val_loader
 
-#set seed
-def seed_everything(seed):
-    random.seed(seed)
-    torch.manual_seed(seed)
-
 if __name__ == "__main__":
-    seed_everything(seed)
+    
     train_loader, val_loader = get_dataloader(
         imagenet_root,
         imagenet_train_trans,
