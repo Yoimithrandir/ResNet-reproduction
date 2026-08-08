@@ -20,10 +20,10 @@ class Conv2(nn.Module):
 class ConvN(nn.Module):
     def __init__(self,nums_of_blocks,in_channels,out_channels):
         super().__init__()
-        self.downsample=PlainNetDownsampleBlock(in_channels,out_channels)
+        self.downsample_block=PlainNetDownsampleBlock(in_channels,out_channels)
         self.conv=nn.Sequential(*[PlainNetBlock(out_channels,out_channels) for i in range(nums_of_blocks-1)])
     def forward(self,x):
-        return self.conv(self.downsample(x))
+        return self.conv(self.downsample_block(x))
 
 
 class PlainNet18(nn.Module):

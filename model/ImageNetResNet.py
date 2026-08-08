@@ -13,11 +13,12 @@ class Conv2(nn.Module):
             stride=2,
             padding=1
         )
-        
+
+        #conv2 feature map和channel均无变化，除了option C采用projection shortcut，其余用identity shortcut
         self.conv=nn.Sequential(
             *[
                 (
-                ProjectionResBlock(64,64)
+                ProjectionResBlock(64,64,downsample=False)
                 if option=='C' 
                 else IdentityResBlock(64,64)
                 )
@@ -33,12 +34,17 @@ class ConvN(nn.Module):
     def __init__(self,nums_of_blocks,in_channels:int,out_channels:int,option='A'):
         super().__init__()
         assert option in ['A','B','C']
-        self.first_block=ZeroPadResBlock(in_channels,out_channels) if option=='A' else ProjectionResBlock(in_channels,out_channels)
 
+        #conv3、4、5第一个block要下采样，option A采用zero padding方法，BC均用projection shortcut
+        self.first_block=(ZeroPadResBlock(in_channels,out_channels) 
+                          if option=='A' 
+                          else ProjectionResBlock(in_channels,out_channels,downsample=True))
+
+        #之后feature map和channel均无变化，除了option C采用projection shortcut，其余用identity shortcut
         self.conv=nn.Sequential(
             *[
                 (
-                ProjectionResBlock(out_channels,out_channels)
+                ProjectionResBlock(out_channels,out_channels,downsample=False)
                 if option=='C' 
                 else IdentityResBlock(out_channels,out_channels)
                 ) 
