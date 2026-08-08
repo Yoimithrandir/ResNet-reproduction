@@ -32,7 +32,7 @@ class BasicBlock(nn.Module):
             padding=1,
             bias=False
             )
-        self.bn1=nn.BatchNorm2d(in_channels)
+        self.bn1=nn.BatchNorm2d(out_channels)
         self.relu=nn.ReLU(inplace=True)
         self.conv2=nn.Conv2d(
             in_channels=in_channels,
@@ -42,15 +42,15 @@ class BasicBlock(nn.Module):
             padding=1,
             bias=False
         )
-        self.bn2=nn.BatchNorm2d(in_channels)
+        self.bn2=nn.BatchNorm2d(out_channels)
         
 
     def forward(self,x):
         out=self.relu(self.bn1(self.conv1(x)))
-        out=self.bn2(self.conv2(x))
+        out=self.bn2(self.conv2(out))
         return out
 
-#用于convn_x的第一个block,用stride=2进行下采样,out_channels=2*in_channels=2*n_channels
+#用于convn_x的第一个block,用stride=2进行下采样,out_channels=2*in_channels
 class BasicDownsampleBlock(nn.Module):
     def __init__(self,in_channels,out_channels):
         super().__init__()
@@ -139,11 +139,13 @@ class ZeroPadResBlock(nn.Module):
 
 #projection shortcuts
 class ProjectionResBlock(nn.Module):
-    def __init__(self,in_channels,out_channels):
+    def __init__(self,in_channels,out_channels,downsample=True):
         super().__init__()
-        assert (out_channels==2*in_channels) or (out_channels==in_channels)
-        self.downsample=True if out_channels==2*in_channels else False
+        assert (out_channels==2*in_channels and downsample) or (out_channels==in_channels and not downsample)
+        self.downsample=downsample
         self.block=BasicDownsampleBlock(in_channels,out_channels) if self.downsample else BasicBlock(in_channels,out_channels)
+
+        #发生下采样时，feature map也会减小
         self.stride=2 if self.downsample else 1
         self.conv1x1=nn.Sequential(
             nn.Conv2d(
