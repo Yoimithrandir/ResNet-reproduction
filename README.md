@@ -34,7 +34,9 @@ ResNet-reproduction/
 │   ├── dataloader.py          # PyTorch DataLoader + 数据增强
 │   └── imagenet.py            # NVIDIA DALI 数据管线
 ├── scripts/
-│   └── move_valimg.py         # 将 ImageNet 验证集图片按类别整理到子文件夹
+│   ├── move_valimg.py         # 将 ImageNet 验证集图片按类别整理到子文件夹
+│   ├── train.sh               # 快速训练脚本（Linux）
+│   └── inference.sh           # 快速推理脚本（Linux）
 ├── train.py                   # 训练脚本
 ├── Inference.py               # 推理/验证脚本（10-crop 评估）
 ├── requirements.txt           # 依赖
@@ -105,6 +107,12 @@ python train.py --model ResNet34 --option B
 python train.py --model PlainNet18
 ```
 
+也可以直接使用脚本快速启动（Linux）：
+
+```bash
+bash scripts/train.sh
+```
+
 ### 完整参数
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -156,6 +164,12 @@ python Inference.py --model ResNet18 --option A
 
 # 验证 ResNet34（Option B）
 python Inference.py --model ResNet34 --option B
+```
+
+也可以直接使用脚本快速验证（Linux）：
+
+```bash
+bash scripts/inference.sh
 ```
 
 脚本将自动加载 `checkpoints/ImageNet/<model>/option_<option>/best_model.pth`。
