@@ -6,20 +6,6 @@ import random
 
 from model.CIFAR10model import (
     ResNet20, ResNet32, ResNet44, ResNet56, ResNet110, ResNet1202,
-<<<<<<< HEAD
-    PlainNet20, PlainNet32, PlainNet44, PlainNet56, PlainNet110, PlainNet1202
-)
-from datasets.CIFAR10dataloader import CIFAR10_get_dataloader
-
-
-
-import torch
-from torch import nn
-from torch.utils.tensorboard import SummaryWriter
-from torch.amp import autocast,grad_scaler
-
-
-=======
     PlainNet20, PlainNet32, PlainNet44, PlainNet56
 )
 from datasets.CIFAR10dataloader import CIFAR10_get_dataloader
@@ -30,7 +16,6 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.amp import autocast, GradScaler
 
 CIFAR10_root = "./data"
->>>>>>> train
 MODEL_DICT = {
     # ResNet 系列
     "ResNet20": ResNet20,
@@ -44,19 +29,10 @@ MODEL_DICT = {
     "PlainNet20": PlainNet20,
     "PlainNet32": PlainNet32,
     "PlainNet44": PlainNet44,
-<<<<<<< HEAD
-    "PlainNet56": PlainNet56,
-    "PlainNet110": PlainNet110,
-    "PlainNet1202": PlainNet1202,
-}
-def create_model(args):
-
-=======
     "PlainNet56": PlainNet56
 }
 
 def create_model(args):
->>>>>>> train
     if args.model not in MODEL_DICT:
         raise ValueError(f"Unknown model: {args.model}. Available models: {list(MODEL_DICT.keys())}")
     
@@ -64,9 +40,6 @@ def create_model(args):
     model_fn = MODEL_DICT[args.model]
     return model_fn()
 
-<<<<<<< HEAD
-def validate(val_loader,criterion,model,device,args):
-=======
 def get_parameter_groups(model, weight_decay):
     decay = []
     no_decay = []
@@ -100,25 +73,16 @@ def get_resnet110_scheduler(optimizer, warmup_iters=400):
     return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 def validate(val_loader, criterion, model, device, args):
->>>>>>> train
     model.eval()
     acc=0
     total_loss=0
     dataset_size=len(val_loader.dataset)
-<<<<<<< HEAD
-    with torch.no_grad():
-
-        for imgs,labels in val_loader:
-            imgs=imgs.to(device,non_blocking=True)
-            labels=labels.to(device,non_blocking=True)
-=======
     
     with torch.no_grad():
         for imgs, labels in val_loader:
             imgs = imgs.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
             
->>>>>>> train
             if args.amp:
                 with autocast("cuda"):
                     output=model(imgs)
@@ -133,45 +97,6 @@ def validate(val_loader, criterion, model, device, args):
             _,pred=torch.max(output,dim=1)
             acc+=(pred==labels).sum().item()
 
-<<<<<<< HEAD
-    acc/=dataset_size
-    total_loss/=dataset_size
-
-    return acc,total_loss
-
-def save_checkpoint(path,model,optimizer,scheduler,args,iteration):
-    checkpoint = {
-        "iteration": iteration,
-        "model_state_dict": model.state_dict(),
-        "optimizer_state_dict": optimizer.state_dict(),
-        "scheduler_state_dict":scheduler.state_dict(),
-        "args": vars(args)
-    }
-
-    torch.save(checkpoint,path)
-
-#加载权重时会返回上次训练到的iteration数
-def load_checkpoint(path,model,optimizer,scheduler)->int:
-    checkpoint=torch.load(path)
-
-    model.load_state_dict(checkpoint["model_state_dict"])
-    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-    scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
-    iteration=checkpoint["iteration"]
-
-    return iteration
-
-def init_weights(model):
-
-    for m in model.modules():
-        if isinstance(m, nn.Conv2d):
-            nn.init.kaiming_normal_(m.weight,mode='fan_out',nonlinearity='relu')
-
-        elif isinstance(m, nn.BatchNorm2d):
-            nn.init.constant_(m.weight,1)
-
-            nn.init.constant_(m.bias,0)
-=======
     acc /= dataset_size
     total_loss /= dataset_size
     return acc, total_loss
@@ -207,7 +132,6 @@ def init_weights(model):
         elif isinstance(m, nn.BatchNorm2d):
             nn.init.constant_(m.weight, 1)
             nn.init.constant_(m.bias, 0)
->>>>>>> train
 
 def seed_everything(seed):
     torch.manual_seed(seed)
@@ -226,53 +150,6 @@ def train(args):
     train_loader,val_loader,_=CIFAR10_get_dataloader(
         batch_size=args.batch_size,
         num_workers=args.num_workers
-<<<<<<< HEAD
-        )
-    #准备优化器
-    criterion=nn.CrossEntropyLoss().to(device)
-    optimizer=torch.optim.SGD(
-            model.parameters(),
-            lr=args.lr,
-            momentum=args.momentum,
-            weight_decay=args.weight_decay
-        )
-    #动态调整学习率
-# 动态调整学习率：在 32000 和 48000 次 iteration 时衰减为原来的 0.1
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer,
-        milestones=[32000, 48000],
-        gamma=0.1
-        )
-
-    if args.amp:
-        scaler=grad_scaler.GradScaler("cuda")
-    
-    #保存路径
-    save_dir=os.path.join("checkpoints","CIFAR10",args.model)
-    os.makedirs(save_dir,exist_ok=True)
-    log_dir=os.path.join('runs',"CIFAR10",args.model)
-    os.makedirs(log_dir,exist_ok=True)
-    writer=SummaryWriter(log_dir)
-    #继续训练情况下，加载权重
-    iteration=0
-    if args.continue_train:
-        checkpoint_path=os.path.join(save_dir,f'iter_{args.which_iters}.pth')
-        iteration=load_checkpoint(checkpoint_path,model,optimizer,scheduler)
-
-    best_acc=0
-    ###################
-
-    #训练流程
-
-    ###################
-    start_time=time.time()
-    while iteration<args.iters:
-        
-        for imgs,labels in train_loader:
-            model.train()
-            imgs=imgs.to(device,non_blocking=True)
-            labels=labels.to(device,non_blocking=True)
-=======
     )
     
     criterion = nn.CrossEntropyLoss().to(device)
@@ -328,7 +205,6 @@ def train(args):
         for imgs, labels in train_loader:
             imgs = imgs.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
->>>>>>> train
 
             optimizer.zero_grad()
 
@@ -346,63 +222,6 @@ def train(args):
                 loss.backward()
                 optimizer.step()
             
-<<<<<<< HEAD
-            iteration+=1
-
-            #打印信息
-            if iteration%args.print_freq==0:
-                #统计准确率
-                _,pred=torch.max(output,dim=1)
-                acc=(pred==labels).sum().item()/labels.shape[0]
-                writer.add_scalar("train/loss",loss.item(),iteration)
-                writer.add_scalar("train/acc",acc,iteration)
-
-                lr=optimizer.param_groups[0]["lr"]
-
-                print(f'iters:{iteration}   train_loss:{loss.item():.2f}    acc:{acc:.4f}    lr:{lr}')
-
-            #验证
-            if iteration%args.val_freq==0:
-                print('='*60)
-                print('start validating')
-                
-                val_acc,val_loss=validate(val_loader,criterion,model,device,args)
-                writer.add_scalar('val/loss',val_loss,iteration)
-                writer.add_scalar('val/acc',val_acc,iteration)
-
-                print(f'iters:{iteration}   validate_loss:{val_loss:.2f}    acc:{val_acc:.4f}')
-                print("="*60)
-                print()
-
-                if val_acc>best_acc:
-                    best_acc=val_acc
-                    best_path=os.path.join(save_dir,'best_model.pth')
-                    save_checkpoint(best_path,model,optimizer,scheduler,args,iteration)
-                    print('best model saved!!!')
-                
-
-            #保存模型
-            if iteration%args.save_freq==0:
-                path=os.path.join(save_dir,f'iter_{iteration}.pth')
-                save_checkpoint(path,model,optimizer,scheduler,args,iteration)
-                print('='*60)
-                print(f'iter_{iteration} saved!!!')
-                print('='*60)
-                print()
-  
-            scheduler.step()
-            if iteration>=args.iters:
-                break
-
-    total_time=time.time()-start_time
-    print("="*50)
-    print(f"batch_size: {args.batch_size}")
-    print(f"num_workers: {args.num_workers}")
-    print(f"iters: {args.iters}")
-    print(f"time: {total_time:.3f}s")
-    print(f"iter/s: {args.iters/total_time:.3f}")
-    print(f"img/s: {args.iters*args.batch_size/total_time:.1f}")
-=======
             # 学习率调整器按 iter 步进
             scheduler.step()
             iteration += 1
@@ -463,7 +282,6 @@ def train(args):
     print(f"Total Iters: {iteration}")
     print(f"Time Elapsed: {total_time:.3f}s")
     print(f"Throughput: {iteration * args.batch_size / total_time:.1f} img/s")
->>>>>>> train
     print("="*50)
     writer.close()
 
@@ -478,25 +296,6 @@ if __name__=='__main__':
                         default='PlainNet20',
                         help='choose which model to train')
     
-<<<<<<< HEAD
-    #训练参数
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--batch_size", type=int, default=128)
-    parser.add_argument("--num_workers", type=int, default=16)
-    parser.add_argument("--amp",action="store_true")
-
-    parser.add_argument("--iters", type=int, default=64000,help='nums of iterations')
-    parser.add_argument("--save_freq", type=int, default=2500,help='frequency of saving model')
-    parser.add_argument("--val_freq", type=int, default=500,help='frequency of validating model')
-    parser.add_argument("--print_freq", type=int, default=100,help='frequency of printing information')
-    
-    
-    
-    parser.add_argument("--continue_train",action="store_true",help="continue training from checkpoint")
-    parser.add_argument("--which_iters", type=int,default=None,help='which model to load when continuing training')
-
-    #优化器参数
-=======
     # 基础训练参数
     parser.add_argument("--seed", type=int, default=127)
     parser.add_argument("--batch_size", type=int, default=128)
@@ -514,7 +313,6 @@ if __name__=='__main__':
     parser.add_argument("--which_epoch", type=int, default=None, help='which epoch checkpoint to load when continuing training')
 
     # 优化器超参数
->>>>>>> train
     parser.add_argument("--lr", type=float, default=0.1)
     parser.add_argument("--weight_decay", type=float, default=0.0001)
     parser.add_argument("--momentum", type=float, default=0.9)
