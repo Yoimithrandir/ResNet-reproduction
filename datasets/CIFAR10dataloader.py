@@ -5,15 +5,15 @@ from torch.utils.data import DataLoader, random_split
 
 # 训练集的数据增强
 train_transform = transforms.Compose([
-    transforms.RandomCrop(32, padding=4),
+    transforms.RandomCrop(32, padding=4,padding_mode='reflect'),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (1, 1, 1))#仅减去均值
 ])
 #验证集与测试集的数据增强
 val_transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (1, 1, 1))
 ])
 
 #下载训练集，准备做45k/5k分割
