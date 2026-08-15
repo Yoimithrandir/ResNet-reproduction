@@ -174,7 +174,7 @@ python Inference.py --model ResNet18 --option A
 python CIFAR10_train.py --model ResNet20 --amp
 
 # 训练 ResNet56（深层网络加 warmup）
-python CIFAR10_train.py --model ResNet56 --deep_Network --amp
+python CIFAR10_train.py --model ResNet56 --deep_Network --weight_decay 0.0003 --amp
 
 # 训练 ResNet110（warmup + 更大 weight decay）
 python CIFAR10_train.py --model ResNet110 --deep_Network --weight_decay 0.0005 --amp
@@ -242,7 +242,6 @@ python CIFAR10_layer_responses.py --models PlainNet20 PlainNet56 ResNet20 ResNet
 
 | 维度 | ImageNet | CIFAR-10 |
 |------|----------|----------|
-| 训练方式 | 按 iteration（600k） | 按 epoch（182，≈64k） |
 | 学习率调度 | ReduceLROnPlateau（自适应） | MultiStepLR（32k/48k 固定衰减）+ 深层 warmup |
 | 权重衰减 | 全部参数 | 仅 conv/fc 权重（BN/bias 不加） |
 | 归一化 | 减均值并除以 std | 仅减均值（std=1） |
