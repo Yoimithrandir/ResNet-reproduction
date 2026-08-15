@@ -12,8 +12,8 @@ class Block(nn.Module):
                              stride=2 if downsample else 1,
                              bias=False)
         self.bn1=nn.BatchNorm2d(out_channels)
-        self.relu=nn.ReLU()
-        self.conv2=nn.Conv2d(out_channels,out_channels,kernel_size=3,padding=1,stride=1)
+        self.relu=nn.ReLU(inplace=True)
+        self.conv2=nn.Conv2d(out_channels,out_channels,kernel_size=3,padding=1,stride=1,bias=False)
         self.bn2=nn.BatchNorm2d(out_channels)
     def forward(self,x):
         out=  self.bn2(self.conv2(self.relu(self.bn1(self.conv1(x)))))
@@ -61,7 +61,7 @@ class PlainNet(nn.Module):
 
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3,stride=1, padding=1, bias=False)
         self.bn=nn.BatchNorm2d(16)
-        self.relu=nn.ReLU()
+        self.relu=nn.ReLU(inplace=True)
         self.layer1=make_layer(nums_blocks,layer_index=1,Residual_learning=False)
         self.layer2=make_layer(nums_blocks,layer_index=2,Residual_learning=False)
         self.layer3=make_layer(nums_blocks,layer_index=3,Residual_learning=False)
@@ -84,7 +84,7 @@ class ResNet(nn.Module):
 
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3,stride=1, padding=1, bias=False)
         self.bn=nn.BatchNorm2d(16)
-        self.relu=nn.ReLU()
+        self.relu=nn.ReLU(inplace=True)
         self.layer1=make_layer(nums_blocks,layer_index=1,Residual_learning=True)
         self.layer2=make_layer(nums_blocks,layer_index=2,Residual_learning=True)
         self.layer3=make_layer(nums_blocks,layer_index=3,Residual_learning=True)
