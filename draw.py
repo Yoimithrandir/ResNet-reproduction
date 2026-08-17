@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 # 用户配置 — 修改这里
 # ============================================================
 
+"""按照runs/ImageNet/model组织event文件"""
 # 选择要画的网络（runs/ 下的文件夹名）
 MODELS = [
     #"PlainNet18",
@@ -20,7 +21,7 @@ MODELS = [
 PLOT_TYPE = "error"
 
 # 日志目录
-LOG_DIR = "runs"
+LOG_DIR = os.path.join('runs','ImageNet')
 
 # 采样步长（train 点密可跳着取，val 点少通常不用跳）
 TRAIN_STRIDE = 5

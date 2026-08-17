@@ -12,8 +12,6 @@ import nvidia.dali.types as types
 from nvidia.dali.pipeline import Pipeline
 import torchvision.transforms as transforms
 
-IMAGENET_MEAN = [0.49139968, 0.48215827, 0.44653124]
-IMAGENET_STD = [0.24703233, 0.24348505, 0.26158768]
 IMAGENET_IMAGES_NUM_TRAIN = 1281167
 IMAGENET_IMAGES_NUM_TEST = 50000
 IMG_DIR = './data/imagenet'
